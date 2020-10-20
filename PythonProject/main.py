@@ -1,52 +1,24 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
-from operator import itemgetter
-import matplotlib.pyplot as plt
 import tkinter as tk
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from pandas import DataFrame
 import FileIO
+import SearchData
+import LineGraph
+import Table
 
 all_items_in_table = []
 
 
-def filter_datasets(data, country, s_date, e_date):
-    metric = [1000, 50, 1]
-    if s_date == "":
-        s_date = "0000-00-00"
-    if e_date == "":
-        e_date = "2300-12-31"
-    s_date_obj = s_date.split("-")
-    s_metric = sum([int(s_date_obj[i]) * metric[i] for i in range(3)])
-    e_date_obj = e_date.split("-")
-    e_metric = sum([int(e_date_obj[i]) * metric[i] for i in range(3)])
-    info = []
-    for i in range(0, 35156, 188):
-        if data[i][0] == country or country == "":
-            if e_date:
-                for j in range(188):
-                    date_obj = data[i + j][1].split("-")
-                    date_metric = sum([int(date_obj[i]) * metric[i] for i in range(3)])
-                    if s_metric <= date_metric <= e_metric:
-                        info.append(data[i + j])
-            else:
-                for j in range(188):
-                    if s_date == data[i + j][1]:
-                        info.append(data[i + j])
-    return info
-
-
 def search(parent, country, start_date, end_date):
-    if end_date < start_date:
-        tk.messagebox.showerror(title="Error", message="Error: End date must be after start date")
-    else:
-        parent.destroy()
-        data = filter_datasets(all_items_in_table, country, start_date, end_date)
-        load_table(data)
+    """Helper function to call functions that assist in searching and loading of data"""
+    parent.destroy()
+    data = SearchData.filter_datasets(all_items_in_table, country, start_date, end_date)
+    Table.load_table(root, data)
 
 
 def load_combobox_country_and_date():
+    """Returns a tuple containing set of countries and set of dates"""
     set_countries = set()
     set_dates = set()
     for item in all_items_in_table:
@@ -60,89 +32,17 @@ def load_combobox_country_and_date():
     return list_countries, list_dates
 
 
-def save_img(figure, country):
-    figure.savefig("Trend in number of confirmed cases for {}.png".format(country))
-    tk.messagebox.showinfo(title="Alert",
-                           message='Saved as: "Trend in number of confirmed cases for {}.png"'.format(country))
-
-
-def trend_for_country(window, list_of_lists, country):
-    menubar = Menu(window)
-    filemenu = Menu(menubar, tearoff=0)
-    filemenu.add_command(label="Save As Image", command=lambda: save_img(dataframe.plot().get_figure(), country))
-
-    menubar.add_cascade(label="File", menu=filemenu)
-    window.config(menu=menubar)
-
-    dates = []
-    number_of_confirmed = []
-    for data in list_of_lists:
-        if data[0] == country:
-            dates.append(data[1])
-            number_of_confirmed.append(data[2])
-
-    figure = plt.Figure(figsize=(100, 100), dpi=80)
-    ax = figure.add_subplot()
-
-    line = FigureCanvasTkAgg(figure, window)
-    line.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
-
-    data = {"Date": dates, "Number of confirmed cases": number_of_confirmed}
-
-    dataframe = DataFrame(data, columns=["Date", "Number of confirmed cases"])
-    dataframe = dataframe[['Date', 'Number of confirmed cases']].groupby('Date').sum()
-    dataframe.plot(kind='line', legend=True, ax=ax, fontsize=10,
-                   title="Number of confirmed cases in {} over time".format(country))
-
-    ax.set_xlabel("Date")
-    ax.set_ylabel("Number of confirmed cases")
-
-
-def load_table(item_list, newFile=False):
-    if newFile:
-        global all_items_in_table
-        all_items_in_table = item_list
-
-    table = root.children["!treeview"]
-    table.delete(*table.get_children())
-
-    try:
-        for (country, date, value1, value2, value3, value4) in item_list:
-            int(value1)
-            int(value2)
-            int(value3)
-            int(value4)
-            table.insert("", "end", values=(country, date, value1, value2, value3, value4))
-    except:
-        tk.messagebox.showerror(title="Error", message="Error: You must choose a csv file you saved from this project")
-
-
-def sort(col_name):
-    if col_name == "Country":
-        sort_col = 0
-    elif col_name == "Date":
-        sort_col = 1
-    elif col_name == "Number of Confirmed Cases":
-        sort_col = 2
-    elif col_name == "Number of Deaths":
-        sort_col = 3
-    elif col_name == "Number of Recovered Cases":
-        sort_col = 4
-    else:
-        sort_col = 5
-
-    table = root.children["!treeview"]
-    item_list = []
-    for child in table.get_children():
-        item_list.append(table.item(child)["values"])
-
-    item_list.sort(key=itemgetter(sort_col))
-    load_table(item_list)
-
-
 def line_graph(parent, country):
+    """Helper function to validate country and call function to display graph"""
+    valid_country = False
+    for i in range(len(all_items_in_table)):
+        if all_items_in_table[i][0] == country:
+            valid_country = True
+            break
     if country == "":
         tk.messagebox.showerror(title="Error", message="Error: You must choose a country")
+    elif not valid_country:
+        tk.messagebox.showerror(title="Error", message="Error: Invalid country")
     else:
         parent.destroy()
         newWindow = Toplevel(root)
@@ -150,10 +50,11 @@ def line_graph(parent, country):
 
         # sets the geometry of toplevel
         newWindow.geometry("750x500")
-        trend_for_country(newWindow, all_items_in_table, country)
+        LineGraph.trend_for_country(newWindow, all_items_in_table, country)
 
 
 def show_graph():
+    """Select country to view graph"""
     newWindow = Toplevel(root)
     newWindow.title("Select country")
 
@@ -168,6 +69,7 @@ def show_graph():
 
 
 def about_window():
+    """Displays about window"""
     newWindow = Toplevel(root)
     newWindow.title("About")
 
@@ -180,6 +82,7 @@ def about_window():
 
 
 def init_search():
+    """Initialises search window"""
     list_countries, list_dates = load_combobox_country_and_date()
 
     newWindow = Toplevel(root)
@@ -206,21 +109,28 @@ def init_search():
 
 
 def open_file():
+    """Allows user to open and load data from file"""
     filename = filedialog.askopenfilename(initialdir="/", title="Select file",
                                           filetypes=(("csv files", "*.csv"), ("all files", "*.*")))
     if len(filename) > 0:
         data_list = FileIO.load_data_from_file(filename)
-        load_table(data_list, newFile=True)
+        global all_items_in_table
+        all_items_in_table = data_list
+        Table.load_table(root, data_list)
         init_menu(show_view=True)
 
 
 def load_default_file():
+    """Load default data"""
     data_list = FileIO.load_default_data()
-    load_table(data_list, newFile=True)
+    global all_items_in_table
+    all_items_in_table = data_list
+    Table.load_table(root, data_list)
     init_menu(show_view=True)
 
 
 def save_csv():
+    """Allows user to save contents of table into file"""
     filename = filedialog.asksaveasfilename(initialdir="/", title="Select file",
                                             filetypes=(("csv files", "*.csv"), ("all files", "*.*")))
     if len(filename) > 0:
@@ -233,6 +143,7 @@ def save_csv():
 
 
 def init_menu(show_view=False):
+    """Shows the menu bar for main window"""
     menubar = Menu(root)
     filemenu = Menu(menubar, tearoff=0)
     filemenu.add_command(label="Open", command=open_file)
@@ -255,23 +166,14 @@ def init_menu(show_view=False):
     root.config(menu=menubar)
 
 
-def init_table():
-    title = Label(root, text="Covid 19 analyser", font=("ComicSans", 40)).grid(row=0, columnspan=6)
-    headers = ("Country", "Date", "Number of Confirmed Cases", "Number of Deaths", "Number of Recovered Cases",
-               "Number of Active Cases")
-    table = ttk.Treeview(root, columns=headers, show='headings')
-
-    for col_name in headers:
-        table.heading(col_name, text=col_name, command=lambda c=col_name: sort(c))
-    table.grid(row=1, columnspan=6)
-
-
 def init():
+    """Calls initialising functions"""
     init_menu()
-    init_table()
+    Table.init_table(root)
 
 
 root = Tk()
+root.title("Covid-19 Analyser")
 
 init()
 root.mainloop()

@@ -2,6 +2,7 @@ import csv
 
 
 def save_data(filename, data_list):
+    """Writes to csv file"""
     with open(filename, "w", newline="") as infile:
         for stats in data_list:
             writer = csv.writer(infile)
@@ -9,6 +10,7 @@ def save_data(filename, data_list):
 
 
 def load_default_data():
+    """Reads content from default file and returns as a list"""
     filename = "covid_19_clean_complete.csv"
     list_of_lists = []
     with open(filename) as infile:
@@ -33,6 +35,7 @@ def load_default_data():
 
 
 def load_data_from_file(filename):
+    """Reads content from given file and returns it as a list"""
     list_of_lists = []
     with open(filename) as infile:
         reader = csv.reader(infile)
