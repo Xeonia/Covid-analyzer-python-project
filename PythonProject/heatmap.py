@@ -1,9 +1,11 @@
 import pycountry
 import plotly.express as px
 import pandas as pd
+import tkinter as tk
 
 
 def main():
+    """Computes and displays heatmap on browser"""
     covid_data = pd.read_csv("covid_19_clean_complete.csv")
     list_countries = covid_data['Country/Region'].unique().tolist()
     d_country_code = {}

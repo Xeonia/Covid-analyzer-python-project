@@ -6,8 +6,14 @@ import FileIO
 import SearchData
 import LineGraph
 import Table
+import heatmap
 
 all_items_in_table = []
+
+
+def show_heatmap():
+    """Calls function to display heatmap on browser"""
+    heatmap.main()
 
 
 def search(parent, country, start_date, end_date):
@@ -156,7 +162,8 @@ def init_menu(show_view=False):
     if show_view:
         viewmenu = Menu(menubar, tearoff=0)
         viewmenu.add_command(label="Search", command=init_search)
-        viewmenu.add_command(label="Graph", command=show_graph)
+        viewmenu.add_command(label="Show graph", command=show_graph)
+        viewmenu.add_command(label="Show global heatmap", command=show_heatmap)
         menubar.add_cascade(label="View", menu=viewmenu)
 
     helpmenu = Menu(menubar, tearoff=0)
