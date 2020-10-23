@@ -17,10 +17,10 @@ def main():
             d_country_code.update({country: ' '})
 
     for k, v in d_country_code.items():
-        covid_data.loc[(covid_data["Country/Region"] == k), 'iso_alpha'] = v
+        covid_data.loc[(covid_data["Country/Region"] == k), 'Country Code'] = v
 
     fig = px.choropleth(data_frame=covid_data,
-                        locations="iso_alpha",
+                        locations="Country Code",
                         color="Confirmed",
                         hover_name="Country/Region",
                         color_continuous_scale='YlOrRd',
