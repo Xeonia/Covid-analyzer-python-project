@@ -43,5 +43,3 @@ def load_data_from_file(filename):
             list_of_lists.append(row)
 
     return list_of_lists
-
-

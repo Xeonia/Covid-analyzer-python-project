@@ -29,7 +29,7 @@ def trend_for_country(window, list_of_lists, country):
             dates.append(data[1])
             number_of_confirmed.append(data[2])
 
-    if len(number_of_confirmed)>1:
+    if len(number_of_confirmed) > 1:
 
         figure = plt.Figure(figsize=(100, 100), dpi=80)
         ax = figure.add_subplot()

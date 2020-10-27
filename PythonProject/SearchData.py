@@ -42,7 +42,7 @@ def filter_datasets(data, country, s_date, e_date):
     e_metric = sum([int(e_date_obj[i]) * metric[i] for i in range(3)])
 
     if e_metric < s_metric:
-        tk.messagebox.showerror(title="Error", message="Error: Start date cannot be smaller than end date")
+        tk.messagebox.showerror(title="Error", message="Error: Start date cannot be after end date")
         return data
 
     # This section creates a metric to identify dates that fall within the date range.

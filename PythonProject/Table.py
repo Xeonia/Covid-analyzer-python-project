@@ -51,4 +51,3 @@ def init_table(root):
         table.heading(col_name, text=col_name, command=lambda c=col_name: sort(root, c))
         table.column(col_name, stretch=YES)
     table.pack(fill=BOTH, expand=1)
-
