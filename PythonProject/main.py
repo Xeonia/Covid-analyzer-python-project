@@ -118,21 +118,37 @@ def open_file():
     """Allows user to open and load data from file"""
     filename = filedialog.askopenfilename(initialdir="/", title="Select file",
                                           filetypes=(("csv files", "*.csv"), ("all files", "*.*")))
-    if len(filename) > 0:
-        data_list = FileIO.load_data_from_file(filename)
-        global all_items_in_table
-        all_items_in_table = data_list
-        Table.load_table(root, data_list)
-        init_menu(show_view=True)
+    try:
+        if len(filename) > 0:
+            data_list = FileIO.load_data_from_file(filename)
+            global all_items_in_table
+            all_items_in_table = data_list
+            for element in all_items_in_table:
+                element[2] = int(element[2])
+                element[3] = int(element[3])
+                element[4] = int(element[4])
+                element[5] = int(element[5])
+            Table.load_table(root, data_list)
+            init_menu(show_view=True)
+    except:
+        tk.messagebox.showerror(title="Error", message="Error: You must choose a csv file you saved from this project")
 
 
 def load_default_file():
     """Load default data"""
-    data_list = FileIO.load_default_data()
-    global all_items_in_table
-    all_items_in_table = data_list
-    Table.load_table(root, data_list)
-    init_menu(show_view=True)
+    try:
+        data_list = FileIO.load_default_data()
+        global all_items_in_table
+        all_items_in_table = data_list
+        for element in all_items_in_table:
+            element[2] = int(element[2])
+            element[3] = int(element[3])
+            element[4] = int(element[4])
+            element[5] = int(element[5])
+        Table.load_table(root, data_list)
+        init_menu(show_view=True)
+    except:
+        tk.messagebox.showerror(title="Error", message="Error: Default File has been corrupted")
 
 
 def save_csv():

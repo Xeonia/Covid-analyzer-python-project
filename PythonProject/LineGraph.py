@@ -13,6 +13,7 @@ def save_img(figure, country):
 
 def trend_for_country(window, list_of_lists, country):
     """Displays line graph for selected country"""
+
     menubar = tk.Menu(window)
     filemenu = tk.Menu(menubar, tearoff=0)
     filemenu.add_command(label="Save As Image", command=lambda: save_img(dataframe.plot().get_figure(), country))
@@ -22,23 +23,29 @@ def trend_for_country(window, list_of_lists, country):
 
     dates = []
     number_of_confirmed = []
+
     for data in list_of_lists:
         if data[0] == country:
             dates.append(data[1])
             number_of_confirmed.append(data[2])
 
-    figure = plt.Figure(figsize=(100, 100), dpi=80)
-    ax = figure.add_subplot()
+    if len(number_of_confirmed)>1:
 
-    line = FigureCanvasTkAgg(figure, window)
-    line.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
+        figure = plt.Figure(figsize=(100, 100), dpi=80)
+        ax = figure.add_subplot()
 
-    data = {"Date": dates, "Number of confirmed cases": number_of_confirmed}
+        line = FigureCanvasTkAgg(figure, window)
+        line.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
 
-    dataframe = DataFrame(data, columns=["Date", "Number of confirmed cases"])
-    dataframe = dataframe[['Date', 'Number of confirmed cases']].groupby('Date').sum()
-    dataframe.plot(kind='line', legend=True, ax=ax, fontsize=10,
-                   title="Number of confirmed cases in {} over time".format(country))
+        data = {"Date": dates, "Number of confirmed cases": number_of_confirmed}
 
-    ax.set_xlabel("Date")
-    ax.set_ylabel("Number of confirmed cases")
+        dataframe = DataFrame(data, columns=["Date", "Number of confirmed cases"])
+        dataframe = dataframe[['Date', 'Number of confirmed cases']].groupby('Date').sum()
+        dataframe.plot(kind='line', legend=True, ax=ax, fontsize=10,
+                       title="Number of confirmed cases in {} over time".format(country))
+
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Number of confirmed cases")
+    else:
+        window.destroy()
+        tk.messagebox.showerror(title="Error", message="Error: Not enough data to plot graph")

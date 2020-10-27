@@ -1,4 +1,3 @@
-import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from operator import itemgetter
@@ -9,15 +8,12 @@ def load_table(root, item_list):
     table = root.children["!treeview"]
     table.delete(*table.get_children())
 
-    try:
-        for (country, date, value1, value2, value3, value4) in item_list:
-            int(value1)
-            int(value2)
-            int(value3)
-            int(value4)
-            table.insert("", "end", values=(country, date, value1, value2, value3, value4))
-    except:
-        tk.messagebox.showerror(title="Error", message="Error: You must choose a csv file you saved from this project")
+    for (country, date, value1, value2, value3, value4) in item_list:
+        int(value1)
+        int(value2)
+        int(value3)
+        int(value4)
+        table.insert("", "end", values=(country, date, value1, value2, value3, value4))
 
 
 def sort(root, col_name):
