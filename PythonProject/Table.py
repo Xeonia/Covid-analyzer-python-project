@@ -42,7 +42,7 @@ def sort(root, col_name):
 
 def init_table(root):
     """Initialises table"""
-    title = Label(root, text="Covid 19 analyser", font=("ComicSans", 40)).pack()
+    title = Label(root, text="COVID 19 Analyser", font=("ComicSans", 40)).pack()
     headers = ("Country", "Date", "Number of Confirmed Cases", "Number of Deaths", "Number of Recovered Cases",
                "Number of Active Cases")
     table = ttk.Treeview(root, columns=headers, show='headings')

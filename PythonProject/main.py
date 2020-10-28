@@ -13,7 +13,13 @@ all_items_in_table = []
 
 def show_heatmap():
     """Calls function to display heatmap on browser"""
-    heatmap.main()
+    try:
+        list_exists = None
+        list_exists = FileIO.load_default_data()
+        if list_exists is not None:
+            heatmap.main()
+    except:
+        tk.messagebox.showerror(title="Error", message="Error: Default File has been corrupted or moved")
 
 
 def search(parent, country, start_date, end_date):
